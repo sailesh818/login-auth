@@ -1,5 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:login/controller/login_controller.dart';
+import 'package:provider/provider.dart';
 
 class ForgotPage extends StatefulWidget {
   const ForgotPage({super.key});
@@ -9,26 +11,19 @@ class ForgotPage extends StatefulWidget {
 }
 
 class _ForgotPageState extends State<ForgotPage> {
-  final emailcontroller = TextEditingController();
-
-  Future<void> reset() async{
-    try{
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: emailcontroller.text.trim());
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Reset Password sent in your email")));
-    }catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Reset Password not sent")));
-
-    }
-    
-  }
+  
   @override
   Widget build(BuildContext context) {
+
+    final controller = Provider.of<logincontroller>(context);
+
+    
     return Scaffold(
       appBar: AppBar(title: Text("Forgot Page"),),
       body: Column(
         children: [
           TextField(
-            controller: emailcontroller,
+            controller: controller.emailcontroller,
             decoration: InputDecoration(
               label: Text("Email"),
               border: OutlineInputBorder(
@@ -38,7 +33,7 @@ class _ForgotPageState extends State<ForgotPage> {
           ),
           SizedBox(height: 25,),
           InkWell(
-            onTap: reset,
+            onTap: () => controller.reset,
             child: Container(
               height: 50,
               width: 200,

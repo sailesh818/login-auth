@@ -1,6 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:login/home/page/home_page.dart';
+import 'package:login/controller/login_controller.dart';
+//import 'package:login/home/page/home_page.dart';
+import 'package:provider/provider.dart';
 
 class CreatePage extends StatefulWidget {
   const CreatePage({super.key});
@@ -10,25 +12,17 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  final emailcontroller = TextEditingController();
-  final passwordcontroller = TextEditingController();
-
-  Future<void> Register() async {
-    try{
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(email: emailcontroller.text.trim(), password: passwordcontroller.text.trim());
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-    }catch(e){
-      print("error");
-    }
-  }
+  
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<logincontroller>(context);
+
     return Scaffold(
       appBar: AppBar(title: Text("Create Account"),),
       body: Column(
         children: [
           TextField(
-            controller: emailcontroller,
+            controller: controller.emailcontroller,
             decoration: InputDecoration(
               label: Text("Email"),
               border: OutlineInputBorder(
@@ -38,7 +32,7 @@ class _CreatePageState extends State<CreatePage> {
           ),
           SizedBox(height: 25,),
           TextField(
-            controller: passwordcontroller,
+            controller: controller.passwordcontroller,
             decoration: InputDecoration(
               label: Text("Password"),
               border: OutlineInputBorder(
@@ -48,7 +42,7 @@ class _CreatePageState extends State<CreatePage> {
           ),
           SizedBox(height: 25,),
           InkWell(
-            onTap: Register,
+            onTap:() => controller.Register(context),
             child: Container(
               height: 50,
               width: 200,

@@ -1,9 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:login/home/page/create_page.dart';
+//import 'package:google_sign_in/google_sign_in.dart';
+import 'package:login/controller/login_controller.dart';
+import 'package:login/login/page/create_page.dart';
 import 'package:login/home/page/home_page.dart';
 import 'package:login/login/page/forgot_page.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,39 +13,10 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage> {
-  final emailcontroller =TextEditingController();
-  final passwordcontroller =TextEditingController();
-
-  Future<void> login() async{
-    try{
-      await FirebaseAuth.instance.signInWithEmailAndPassword(email: emailcontroller.text.trim(), password: passwordcontroller.text.trim());
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
-
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error")));
-    }         
-  }
-
-  Future<UserCredential?> google() async{
-    try{
-      final GoogleSignInAccount? googleuser = await GoogleSignIn().signIn();
-      if (googleuser != null){
-        return null;
-      }
-      final GoogleSignInAuthentication? googleAuth = await googleuser?.authentication;
-      final credential = GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
-      return FirebaseAuth.instance.signInWithCredential(credential);
-
-    }catch(e){
-      return null;
-    }
-
-  }
-
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<logincontroller>(context);
     return Scaffold(
       appBar: AppBar(title: Text('Login'),),
       body: Padding(
@@ -51,7 +24,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           children: [
             TextField(
-              controller: emailcontroller,
+              controller: controller.emailcontroller,
               decoration: InputDecoration(
                 label: Text("Email"),
                 border: OutlineInputBorder(
@@ -61,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             SizedBox(height: 25,),
             TextField(
-              controller: passwordcontroller,
+              controller: controller.passwordcontroller,
               decoration: InputDecoration(
                 label: Text("Password"),
                 border: OutlineInputBorder(
@@ -76,16 +49,14 @@ class _LoginPageState extends State<LoginPage> {
               child: Text("Forgot Password", style: TextStyle(color: const Color.fromARGB(255, 70, 2, 152)),)),
             SizedBox(height: 25,),
             InkWell(
-              onTap: login,
+              onTap: () => controller.login,
               child: Container(
                 height: 40,
                 width: 100,
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(25)
-
                 ),
-                
                 child: Center(child: Text("Login", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
               ),
             ),
@@ -101,19 +72,16 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(25)
-
                 ),
-                
                 child: Center(child: Text("Create Account", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
               ),
             ),
             SizedBox(height: 25,),
             InkWell(
               onTap: () async {
-                final UserCredential = await google();
+                final UserCredential = await controller.google();
                 if (UserCredential != null){
                   Navigator.push(context, MaterialPageRoute(builder: (_)=>HomePage()));
-
                 }
               },
               child: Container(
@@ -122,9 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(25)
-
                 ),
-                
                 child: Center(child: Text("Google SignIn", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),)),
               ),
             ),
